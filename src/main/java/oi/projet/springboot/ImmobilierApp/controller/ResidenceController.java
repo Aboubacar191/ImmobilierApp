@@ -1,56 +1,48 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import oi.projet.springboot.ImmobilierApp.Services.ResidenceService;
 import oi.projet.springboot.ImmobilierApp.models.Residence;
+import oi.projet.springboot.ImmobilierApp.Services.ResidenceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/residences")
 @CrossOrigin(origins = "*")
 public class ResidenceController {
 
     @Autowired
     private ResidenceService residenceService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/residence")
-    public ResponseEntity<List<Residence>> getResidence() {
-        List<Residence> residences = residenceService.getResidences();
-        return new ResponseEntity<>(residences, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<Residence>> getAllResidences() {
+        return ResponseEntity.ok(residenceService.getAllResidences());
     }
 
-    @RequestMapping("/residence/{idResidence}")
-    public ResponseEntity<Residence> getUneResidence(@PathVariable long idResidence) {
-        Residence residence = residenceService.getUneResidence(idResidence);
-        return residence != null 
-            ? new ResponseEntity<>(residence, HttpStatus.OK)
-            : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Residence> getResidenceById(@PathVariable Long id) {
+        Optional<Residence> residence = residenceService.getResidenceById(id);
+        return residence.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "residence/{idResidence}")
-    public ResponseEntity<Void> deleteResidence(@PathVariable long idResidence) {
-        residenceService.deleteResidence(idResidence);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PostMapping
+    public ResponseEntity<Residence> createResidence(@RequestBody Residence residence) {
+        return ResponseEntity.ok(residenceService.saveResidence(residence));
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/residence")
-    public ResponseEntity<Void> addResidence(@RequestBody Residence residence) {
-        residenceService.addResidence(residence);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PutMapping("/{id}")
+    public ResponseEntity<Residence> updateResidence(@PathVariable Long id, @RequestBody Residence residence) {
+        residence.setIdResidence(id);
+        return ResponseEntity.ok(residenceService.saveResidence(residence));
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/residence/{idResidence}")
-    public ResponseEntity<Void> updateResidence(@RequestBody Residence residence, @PathVariable long idResidence) {
-        residenceService.updateResidence(residence, idResidence);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteResidence(@PathVariable Long id) {
+        residenceService.deleteResidence(id);
+        return ResponseEntity.noContent().build();
     }
 }

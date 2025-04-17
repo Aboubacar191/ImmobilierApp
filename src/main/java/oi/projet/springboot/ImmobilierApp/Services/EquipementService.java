@@ -1,13 +1,10 @@
 package oi.projet.springboot.ImmobilierApp.Services;
 
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import jakarta.persistence.EntityNotFoundException;
 import oi.projet.springboot.ImmobilierApp.models.Equipement;
 import oi.projet.springboot.ImmobilierApp.repository.EquipementRepository;
 
@@ -17,43 +14,23 @@ public class EquipementService {
     @Autowired
     private EquipementRepository equipementRepository;
 
-    public List<Equipement> getEquipements() {
-        List<Equipement> equipements = new ArrayList<Equipement>();
-        equipementRepository.findAll().forEach(equipement -> {
-            equipements.add(equipement);
-        });
-        return equipements;
+    public List<Equipement> getAllEquipements() {
+        return equipementRepository.findAll();
     }
 
-    public Equipement getUnEquipement(long idEquipement) {
-        return equipementRepository.findById(idEquipement).orElse(null);
+    public Optional<Equipement> getEquipementById(Long id) {
+        return equipementRepository.findById(id);
     }
 
-    public void deleteEquipement(long idEquipement) {
-        equipementRepository.deleteById(idEquipement);
+    public Equipement saveEquipement(Equipement equipement) {
+        return equipementRepository.save(equipement);
     }
 
-    public void addEquipement(Equipement equipement) {
-        equipementRepository.save(equipement);
-
-    }
-
-    public void updateEquipement(Equipement equipement, long idEquipement) {
-        Optional<Equipement> existingEquipementOptional = equipementRepository.findById(idEquipement);
-
-        if (existingEquipementOptional.isPresent()) {
-            Equipement existingEquipement = existingEquipementOptional.get();
-            // Mettez à jour les champs nécessaires de l'entité existante
-            existingEquipement.setNomEquipement(equipement.getNomEquipement());
-            existingEquipement.setDescription(equipement.getDescription());
-            existingEquipement.setQuantité(equipement.getQuantité());
-            existingEquipement.setNomEmplacement(equipement.getNomEmplacement());
-
-            // Sauvegardez l'entité mise à jour
-            equipementRepository.save(existingEquipement);
+    public void deleteEquipement(Long id) {
+        if (equipementRepository.existsById(id)) {
+            equipementRepository.deleteById(id);
         } else {
-            // Gérer le cas où l'entité n'existe pas (par exemple, lever une exception)
-            throw new EntityNotFoundException("Equipement with id " + idEquipement + " not found.");
+            throw new RuntimeException("Équipement introuvable avec l'ID : " + id);
         }
     }
 }

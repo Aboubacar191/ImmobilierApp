@@ -1,60 +1,48 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.RequiredArgsConstructor;
 import oi.projet.springboot.ImmobilierApp.Services.AdministrateurService;
 import oi.projet.springboot.ImmobilierApp.models.Administrateur;
-import oi.projet.springboot.ImmobilierApp.repository.UtilisateurRepository;
+import oi.projet.springboot.ImmobilierApp.Services.AdministrateurService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*")
-@RestController
-@RequiredArgsConstructor
-public class AdministrateurController {
+import java.util.Optional;
 
-    private final PasswordEncoder passwordEncoder;
-    private final UtilisateurRepository utilisateurRepository;
+@RestController
+@RequestMapping("/api/administrateurs")
+@CrossOrigin(origins = "*")
+public class AdministrateurController {
 
     @Autowired
     private AdministrateurService administrateurService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/administrateurs")
-    public ResponseEntity<List<Administrateur>> getAdministrateurs() {
-        List<Administrateur> administrateurs = administrateurService.getAdministrateurs();
-        return new ResponseEntity<>(administrateurs, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<Administrateur>> getAllAdministrateurs() {
+        return ResponseEntity.ok(administrateurService.getAllAdministrateurs());
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/administrateurs/{id}")
-    public ResponseEntity<Administrateur> getAdministrateur(@PathVariable long id) {
-        Administrateur administrateur = administrateurService.getUnAdministrateur(id);
-        return administrateur != null 
-            ? new ResponseEntity<>(administrateur, HttpStatus.OK)
-            : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Administrateur> getAdministrateurById(@PathVariable Long id) {
+        Optional<Administrateur> administrateur = administrateurService.getAdministrateurById(id);
+        return administrateur.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/administrateurs/{id}")
-    public ResponseEntity<Void> deleteAdministrateur(@PathVariable long id) {
+    @PostMapping
+    public ResponseEntity<Administrateur> createAdministrateur(@RequestBody Administrateur administrateur) {
+        return ResponseEntity.ok(administrateurService.saveAdministrateur(administrateur));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Administrateur> updateAdministrateur(@PathVariable Long id, @RequestBody Administrateur administrateur) {
+        administrateur.setId(id);
+        return ResponseEntity.ok(administrateurService.saveAdministrateur(administrateur));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAdministrateur(@PathVariable Long id) {
         administrateurService.deleteAdministrateur(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/administrateurs")
-    public ResponseEntity<Void> addAdministrateur(@RequestBody Administrateur administrateur) {
-        administrateur.setMotDePasse(passwordEncoder.encode(administrateur.getMotDePasse()));
-        administrateurService.addAdministrateur(administrateur);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-      
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/administrateurs/{id}")
-    public ResponseEntity<Void> updateAdministrateur(@RequestBody Administrateur administrateur, @PathVariable long id) {
-        administrateur.setMotDePasse(passwordEncoder.encode(administrateur.getMotDePasse()));
-        administrateurService.updateAdministrateur(administrateur, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

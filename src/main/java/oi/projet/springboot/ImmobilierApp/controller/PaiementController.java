@@ -1,51 +1,48 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
+import oi.projet.springboot.ImmobilierApp.Services.PaiementService;
+import oi.projet.springboot.ImmobilierApp.models.Paiement;
+import oi.projet.springboot.ImmobilierApp.Services.PaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import oi.projet.springboot.ImmobilierApp.Services.PaiementService;
-import oi.projet.springboot.ImmobilierApp.models.Paiement;
-
 import java.util.List;
-@CrossOrigin(origins = "*")
-@RestController
+import java.util.Optional;
 
+@RestController
+@RequestMapping("/api/paiements")
+@CrossOrigin(origins = "*")
 public class PaiementController {
 
     @Autowired
     private PaiementService paiementService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/paiements")
-    public ResponseEntity<List<Paiement>> getPaiements() {
-        List<Paiement> paiements = paiementService.getPaiements();
-        return new ResponseEntity<>(paiements, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<Paiement>> getAllPaiements() {
+        return ResponseEntity.ok(paiementService.getAllPaiements());
     }
 
-    @RequestMapping("/paiements/{id}")
-    public ResponseEntity<Paiement> getPaiement(@PathVariable long id) {
-        Paiement paiement = paiementService.getUnPaiement(id);
-        return paiement != null 
-            ? new ResponseEntity<>(paiement, HttpStatus.OK)
-            : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Paiement> getPaiementById(@PathVariable Long id) {
+        Optional<Paiement> paiement = paiementService.getPaiementById(id);
+        return paiement.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/paiements/{id}")
-    public ResponseEntity<Void> deletePaiement(@PathVariable long id) {
+    @PostMapping
+    public ResponseEntity<Paiement> createPaiement(@RequestBody Paiement paiement) {
+        return ResponseEntity.ok(paiementService.savePaiement(paiement));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Paiement> updatePaiement(@PathVariable Long id, @RequestBody Paiement paiement) {
+        paiement.setIdPaiement(id);
+        return ResponseEntity.ok(paiementService.savePaiement(paiement));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePaiement(@PathVariable Long id) {
         paiementService.deletePaiement(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/paiements")
-    public ResponseEntity<Void> addPaiement(@RequestBody Paiement paiement) {
-        paiementService.addPaiement(paiement);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/paiements/{id}")
-    public ResponseEntity<Void> updatePaiement(@RequestBody Paiement paiement, @PathVariable long id) {
-        paiementService.updatePaiement(paiement, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,70 +1,71 @@
 package oi.projet.springboot.ImmobilierApp.models;
 
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.*;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+import java.io.Serializable;
+import java.util.List;
+
+
 @Entity
-@DiscriminatorValue("Locataire")
-public class Locataire extends Utilisateur {
-
-   @ManyToOne 
-   @JoinColumn(name = "residence_ID")
-   private Residence residence;
-   @OneToMany(mappedBy = "locataire") 
-   private Set<Paiement> paiements;
-
-
-   
-
-   public Locataire() {
-    super();
-}
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Data
+@Getter
+@Setter
+public class Locataire implements Serializable {
 
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
+    @Column(nullable = false)
+    private String imageURL;
 
-public Locataire(String image, String nom, String prenom, String adresse, String email, int contact,
-   String nomUtilisateur, String motDePasse){
-       super(image, nom, prenom, adresse, email, contact, nomUtilisateur, motDePasse);
-       paiements = new HashSet<>();
-      
-   
-   }
+    @Column(nullable = false)
+    private String nom;
 
+    @Column(nullable = false)
+    private String prenom;
 
+    @Column(nullable = false)
+    private String adresse;
 
+    @Min(value = 100000000, message = "Numéro de téléphone invalide")
+    @Column(nullable = false, unique = true)
+    private String telephone1;
 
-public Residence getResidence() {
-    return residence;
-}
+    @Column(nullable = true)
+    private String telephone2;
 
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$", message = "Email invalide")
+    @Column(nullable = false, unique = true)
+    private String email;
 
+    @Column(nullable = false)
+    private int NumeroDuLit;
 
+    @Column(nullable = false)
+    private String Contrat;
 
-public void setResidence(Residence residence) {
-    this.residence = residence;
-}
+    @OneToMany(mappedBy = "locataire",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Paiement> paiementList;
 
+    @OneToMany(mappedBy = "locataires",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Maintenance> maintenanceList;
 
+    @ManyToOne
+    private Residence residence;
 
-
-public Set<Paiement> getPaiements() {
-    return paiements;
-}
-
-
-
-
-public void setPaiements(Set<Paiement> paiements) {
-    this.paiements = paiements;
-}
-
-
+    @OneToOne
+    @JoinColumn(name = "User_Id")
+    private CompteUser compteuser;
 
 }
+
+

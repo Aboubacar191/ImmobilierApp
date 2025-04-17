@@ -1,51 +1,48 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
+import oi.projet.springboot.ImmobilierApp.Services.MaintenanceService;
+import oi.projet.springboot.ImmobilierApp.models.Maintenance;
+import oi.projet.springboot.ImmobilierApp.Services.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import oi.projet.springboot.ImmobilierApp.Services.MaintenanceService;
-import oi.projet.springboot.ImmobilierApp.models.Maintenance;
-
 import java.util.List;
-@CrossOrigin(origins = "*")
-@RestController
+import java.util.Optional;
 
+@RestController
+@RequestMapping("/api/maintenances")
+@CrossOrigin(origins = "*")
 public class MaintenanceController {
 
     @Autowired
     private MaintenanceService maintenanceService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/maintenances")
-    public ResponseEntity<List<Maintenance>> getMaintenances() {
-        List<Maintenance> maintenances = maintenanceService.getMaintenances();
-        return new ResponseEntity<>(maintenances, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<Maintenance>> getAllMaintenances() {
+        return ResponseEntity.ok(maintenanceService.getAllMaintenances());
     }
 
-    @RequestMapping("/maintenances/{id}")
-    public ResponseEntity<Maintenance> getMaintenance(@PathVariable long id) {
-        Maintenance maintenance = maintenanceService.getUneMaintenance(id);
-        return maintenance != null 
-            ? new ResponseEntity<>(maintenance, HttpStatus.OK)
-            : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Maintenance> getMaintenanceById(@PathVariable Long id) {
+        Optional<Maintenance> maintenance = maintenanceService.getMaintenanceById(id);
+        return maintenance.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/maintenances/{id}")
-    public ResponseEntity<Void> deleteMaintenance(@PathVariable long id) {
+    @PostMapping
+    public ResponseEntity<Maintenance> createMaintenance(@RequestBody Maintenance maintenance) {
+        return ResponseEntity.ok(maintenanceService.saveMaintenance(maintenance));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Maintenance> updateMaintenance(@PathVariable Long id, @RequestBody Maintenance maintenance) {
+        maintenance.setIdMaintenance(id);
+        return ResponseEntity.ok(maintenanceService.saveMaintenance(maintenance));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMaintenance(@PathVariable Long id) {
         maintenanceService.deleteMaintenance(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/maintenances")
-    public ResponseEntity<Void> addMaintenance(@RequestBody Maintenance maintenance) {
-        maintenanceService.addMaintenance(maintenance);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, value = "/maintenances/{id}")
-    public ResponseEntity<Void> updateMaintenance(@RequestBody Maintenance maintenance, @PathVariable long id) {
-        maintenanceService.updateMaintenance(maintenance, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

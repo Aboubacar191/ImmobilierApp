@@ -8,6 +8,6 @@ import oi.projet.springboot.ImmobilierApp.models.Administrateur;
 
 public interface AdministrateurRepository extends JpaRepository<Administrateur, Long>{
 
-    Administrateur findByNomUtilisateur(String nomUtilisateur);
+
 
 }

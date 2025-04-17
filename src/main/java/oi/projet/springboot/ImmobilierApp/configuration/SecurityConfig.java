@@ -1,5 +1,6 @@
 package oi.projet.springboot.ImmobilierApp.configuration;
 
+import oi.projet.springboot.ImmobilierApp.Services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
-import oi.projet.springboot.ImmobilierApp.Services.UserDetailsServiceImpl;
-import oi.projet.springboot.ImmobilierApp.filter.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -42,12 +41,11 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/*").permitAll()      
-                        .anyRequest().authenticated())
+                        auth.requestMatchers("/api/auth/*").permitAll()
+                                .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(userDetailsServiceImpl, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
-                
+
     }
 
 }
-

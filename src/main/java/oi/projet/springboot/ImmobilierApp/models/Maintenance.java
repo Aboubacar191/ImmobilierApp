@@ -1,14 +1,23 @@
 package oi.projet.springboot.ImmobilierApp.models;
+import java.io.Serializable;
 import java.util.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+import lombok.*;
+
 @Entity
-public class Maintenance {
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Data
+@Getter
+@Setter
+
+public class Maintenance implements Serializable {
 
     public enum Statut{
         Demandé,
@@ -18,114 +27,27 @@ public class Maintenance {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long idMaintenance;
+
+    @Column(nullable = false)
     private String nomMaintenance;
+
+    @Column(nullable = false)
     private Date dateM;
+
+    @Column(nullable = false)
     private String Description;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Statut statut;
+
     @ManyToOne
-    @JoinColumn(name = "Locataire_ID")
-    private Locataire locataire;
+    private Locataire locataires;
+
     @ManyToOne
-    @JoinColumn(name = "technicien_ID")
-    private TechnicienDeMaintenance technicienDeMaintenance;
-    @ManyToOne
-    @JoinColumn(name = "administrateur_ID")
-    private Administrateur administrateur;
-    @ManyToOne
-    @JoinColumn(name = "gestionnaire_ID")
-    private GestionnaireDeResidence gestionnaireDeResidence;
-    @ManyToOne
-    @JoinColumn(name = "residence_ID")
-    private Residence residences;
+    private Residence residence;
 
 
-    
-    
 
-    public Maintenance() {
-    }
-
-    public Maintenance(String nomMaintenance, Date dateM, String description) {
-        this.nomMaintenance = nomMaintenance;
-        this.dateM = dateM;
-        Description = description;
-        this.statut = Statut.Demandé;
-    }
-    
-    public String getNomMaintenance() {
-        return nomMaintenance;
-    }
-    public void setNomMaintenance(String nomMaintenance) {
-        this.nomMaintenance = nomMaintenance;
-    }
-    public Date getDateM() {
-        return dateM;
-    }
-    public void setDateM(Date dateM) {
-        this.dateM = dateM;
-    }
-    public String getDescription() {
-        return Description;
-    }
-    public void setDescription(String description) {
-        Description = description;
-    }
-    public Statut getStatut() {
-        return statut;
-    }
-    public void setStatut(Statut statut) {
-        this.statut = statut;
-    }
-
-    public long getIdMaintenance() {
-        return idMaintenance;
-    }
-
-    public void setIdMaintenance(long idMaintenance) {
-        this.idMaintenance = idMaintenance;
-    }
-
-    public Locataire getLocataire() {
-        return locataire;
-    }
-
-    public void setLocataire(Locataire locataire) {
-        this.locataire = locataire;
-    }
-
-    public TechnicienDeMaintenance getTechnicienDeMaintenance() {
-        return technicienDeMaintenance;
-    }
-
-    public void setTechnicienDeMaintenance(TechnicienDeMaintenance technicienDeMaintenance) {
-        this.technicienDeMaintenance = technicienDeMaintenance;
-    }
-
-    public Administrateur getAdministrateur() {
-        return administrateur;
-    }
-
-    public void setAdministrateur(Administrateur administrateur) {
-        this.administrateur = administrateur;
-    }
-
-    public GestionnaireDeResidence getGestionnaireDeResidence() {
-        return gestionnaireDeResidence;
-    }
-
-    public void setGestionnaireDeResidence(GestionnaireDeResidence gestionnaireDeResidence) {
-        this.gestionnaireDeResidence = gestionnaireDeResidence;
-    }
-
-    public Residence getResidences() {
-        return residences;
-    }
-
-    public void setResidences(Residence residences) {
-        this.residences = residences;
-    }
-
-
-    
 
 }
