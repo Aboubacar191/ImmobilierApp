@@ -1,13 +1,17 @@
 package oi.projet.springboot.ImmobilierApp.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import oi.projet.springboot.ImmobilierApp.models.User;
 
 import oi.projet.springboot.ImmobilierApp.models.Administrateur;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
-
-public interface AdministrateurRepository extends JpaRepository<Administrateur, Long>{
-
-
+@Repository
+public interface AdministrateurRepository extends UserRepository<Administrateur> {
+    Administrateur findByUsername(String username);
+    List<Administrateur> findByRole(User.Role role);
 
 }
+

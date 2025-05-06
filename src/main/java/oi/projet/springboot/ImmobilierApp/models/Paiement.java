@@ -12,10 +12,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
-
+@AllArgsConstructor
 public class Paiement implements Serializable {
 
     public enum method {
@@ -50,12 +48,9 @@ public class Paiement implements Serializable {
     @ManyToOne
     private Locataire locataire;
 
-    @ManyToOne
-    private Residence residence;
+    public Paiement() {
 
-    @ManyToOne
-    private Administrateur administrateur;
-
+    }
 
 
 }

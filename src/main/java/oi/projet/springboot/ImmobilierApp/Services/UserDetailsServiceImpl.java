@@ -1,45 +1,49 @@
 package oi.projet.springboot.ImmobilierApp.Services;
 
-import oi.projet.springboot.ImmobilierApp.models.CompteUser;
-import oi.projet.springboot.ImmobilierApp.repository.CompteUserRepository;
+import oi.projet.springboot.ImmobilierApp.models.Administrateur;
+import oi.projet.springboot.ImmobilierApp.models.User;
+import oi.projet.springboot.ImmobilierApp.repository.AdministrateurRepository;
+import oi.projet.springboot.ImmobilierApp.repository.LocataireRepository;
+import oi.projet.springboot.ImmobilierApp.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import java.util.List;
 
-import java.util.Collection;
 import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final CompteUserRepository compteUserRepository;
-
-
+    private final AdministrateurRepository administrateurRepository;
+    private final LocataireRepository locataireRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Recherche de l'utilisateur dans la base de données
-        CompteUser compteUser = compteUserRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec le nom d'utilisateur : " + username));
 
-        // Transformer le rôle en liste de GrantedAuthority
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(compteUser.getRoleEntities().getName()));
+        User user = administrateurRepository.findByUsername(username);
 
-        // Retourner un UserDetails basé sur CompteUser
-        return new User(
-                compteUser.getUsername(),
-                compteUser.getPassword(),
-                authorities
+        if (user == null) {
+            user = locataireRepository.findByUsername(username);
+        }
+
+        if (user == null) {
+            throw new UsernameNotFoundException("Utilisateur non trouvé avec le nom d'utilisateur : " + username);
+        }
+
+        // Création des rôles pour Spring Security
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole().name());
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singletonList(authority)
         );
     }
-
-    }
-
+}
 

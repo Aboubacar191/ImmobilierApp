@@ -10,13 +10,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 @Data
 @Getter
 @Setter
-
+@AllArgsConstructor
 public class Maintenance implements Serializable {
 
     public enum Statut{
@@ -42,12 +40,11 @@ public class Maintenance implements Serializable {
     private Statut statut;
 
     @ManyToOne
-    private Locataire locataires;
-
-    @ManyToOne
     private Residence residence;
 
+    public Maintenance() {
 
+    }
 
 
 }

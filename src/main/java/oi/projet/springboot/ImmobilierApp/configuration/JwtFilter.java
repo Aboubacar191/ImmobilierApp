@@ -19,7 +19,7 @@ import oi.projet.springboot.ImmobilierApp.configuration.JwtUtils;
 
 @Component
 @RequiredArgsConstructor
-public class  JwtFilter extends OncePerRequestFilter{
+public class JwtFilter extends OncePerRequestFilter{
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final JwtUtils jwtUtils;

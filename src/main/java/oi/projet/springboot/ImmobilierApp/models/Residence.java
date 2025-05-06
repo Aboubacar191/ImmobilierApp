@@ -14,12 +14,11 @@ import java.util.List;
 
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
 @Data
 @Getter
 @Setter
+@AllArgsConstructor
 public class Residence implements Serializable {
 
    public enum Tn {
@@ -59,27 +58,26 @@ public class Residence implements Serializable {
     private Tn TypeLogement;
 
     @OneToMany(mappedBy = "residence",cascade = CascadeType.ALL,fetch = FetchType.LAZY )
+    @JsonIgnore
     private List<Locataire> locataireList;
-
-    @OneToMany(mappedBy = "residence",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private  List<Paiement> paiementList;
-
 
     @OneToMany(mappedBy = "residence",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Maintenance> maintenanceList;
 
 
     @OneToMany(mappedBy = "residence",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Installation> installations;
 
     @ManyToMany
     @JoinTable(name = "Admin_Residence", joinColumns = @JoinColumn(name = "ResidId"),
             inverseJoinColumns = @JoinColumn(name = "AdminId")
     )
+    @JsonIgnore
     private List<Administrateur> administrateurs;
 
+ public Residence() {
 
-
-
+ }
 
 }
