@@ -12,15 +12,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories("oi.projet.springboot.ImmobilierApp.repository")
-@EntityScan("oi.projet.springboot.ImmobilierApp.model")
+@EntityScan(basePackages = "oi.projet.springboot.ImmobilierApp.models") // Ajoute cette ligne si ce n’est pas le cas
+@EnableJpaRepositories(basePackages = "oi.projet.springboot.ImmobilierApp.repository")
 public class ImmobilierAppApplication {
 
 	public static void main(String[] args) {
 
 		ConfigurableApplicationContext configurableApplicationContext =
 				SpringApplication.run(ImmobilierAppApplication.class, args);
-		UserRepository administratuerRepository =
+		UserRepository administrateurRepository =
 				configurableApplicationContext.getBean(AdministrateurRepository.class);
 		UserRepository locataireRepository =
 				configurableApplicationContext.getBean(LocataireRepository.class);

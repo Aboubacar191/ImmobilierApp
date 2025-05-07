@@ -70,8 +70,8 @@ public class Residence implements Serializable {
     private List<Installation> installations;
 
     @ManyToMany
-    @JoinTable(name = "Admin_Residence", joinColumns = @JoinColumn(name = "ResidId"),
-            inverseJoinColumns = @JoinColumn(name = "AdminId")
+    @JoinTable(name = "Admin_Residence", joinColumns = @JoinColumn(name = "idResidence"),
+            inverseJoinColumns = @JoinColumn(name = "id")
     )
     @JsonIgnore
     private List<Administrateur> administrateurs;

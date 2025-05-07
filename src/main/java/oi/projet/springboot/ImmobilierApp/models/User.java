@@ -3,8 +3,10 @@ package oi.projet.springboot.ImmobilierApp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.management.ObjectName;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -12,8 +14,8 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 @AllArgsConstructor
-@MappedSuperclass
 public abstract class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,14 +33,14 @@ public abstract class User {
     @Column(nullable = false)
     protected String adresse;
 
-    @Min(value = 100000000, message = "Numéro de téléphone invalide")
+    @Pattern(regexp = "\\d{9,}", message = "Numéro de téléphone invalide")
     @Column(nullable = false, unique = true)
     protected String telephone1;
 
-    @Column
+    @Pattern(regexp = "\\d{9,}", message = "Numéro de téléphone invalide")
     protected String telephone2;
 
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z]{2,6}$", message = "Email invalide")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "Email invalide")
     @Column(nullable = false, unique = true)
     protected String email;
 
@@ -48,18 +50,31 @@ public abstract class User {
     @Column(nullable = false)
     protected String password;
 
+    public enum Role {
+        Administrateur,
+        Gestionnaire,
+        Locataire;
+
+
+    }
+
+    @Enumerated(EnumType.STRING)
+    protected Role role; // interne à l'application, non utilisé par Spring Security
+
     public User() {
 
     }
 
-    public enum Role {
-        Administrateur,
-        Gestionnaire,
-        Locataire
+    public User(String imageURL, String nom, String prenom, String adresse, String telephone1, String telephone2, String email, String username, String password, Role role) {
+        this.imageURL = imageURL;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.telephone1 = telephone1;
+        this.telephone2 = telephone2;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
     }
-
-    @Enumerated(EnumType.STRING)
-    protected Role Role; // interne à l'application, non utilisé par Spring Security
-
-
 }
