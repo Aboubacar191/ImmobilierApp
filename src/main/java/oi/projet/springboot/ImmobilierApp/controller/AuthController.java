@@ -117,12 +117,11 @@ public class AuthController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String token = jwtUtils.generateToken(username);
+            String token = jwtUtils.generateToken(existingUser.getUsername(), existingUser.getId(), typeUser);
+
 
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
-            response.put("TypeUser", typeUser);
-            response.put("id", existingUser.getId());
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
