@@ -46,5 +46,10 @@ public class Maintenance implements Serializable {
 
     }
 
-
+    public Maintenance(String nomMaintenance, Date dateM, String description, Statut statut) {
+        this.nomMaintenance = nomMaintenance;
+        this.dateM = dateM;
+        Description = description;
+        this.statut = statut;
+    }
 }

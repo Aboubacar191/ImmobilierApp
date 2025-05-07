@@ -35,5 +35,8 @@ public class Equipement implements Serializable {
 
     }
 
-
+    public Equipement(String nomEquipement, String description) {
+        this.nomEquipement = nomEquipement;
+        this.description = description;
+    }
 }

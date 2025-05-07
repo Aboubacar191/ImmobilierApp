@@ -80,4 +80,14 @@ public class Residence implements Serializable {
 
  }
 
+ public Residence(String nomResidence, String imageExterieur, String imageInterieur1, String imageInterieur2, String adresseResidence, long nbActuelLocataire, long nbMaxLocataire, Tn typeLogement) {
+  this.nomResidence = nomResidence;
+  this.imageExterieur = imageExterieur;
+  this.imageInterieur1 = imageInterieur1;
+  this.imageInterieur2 = imageInterieur2;
+  this.adresseResidence = adresseResidence;
+  this.nbActuelLocataire = nbActuelLocataire;
+  this.nbMaxLocataire = nbMaxLocataire;
+  TypeLogement = typeLogement;
+ }
 }

@@ -41,5 +41,9 @@ public class Installation implements Serializable {
 
     }
 
-
+    public Installation(Residence residence, Equipement equipment, int quantite) {
+        this.residence = residence;
+        this.equipment = equipment;
+        Quantite = quantite;
+    }
 }

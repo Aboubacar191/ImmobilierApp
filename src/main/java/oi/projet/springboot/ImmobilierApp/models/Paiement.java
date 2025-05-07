@@ -52,5 +52,10 @@ public class Paiement implements Serializable {
 
     }
 
-
+    public Paiement(Date date, float montant, method methodeDepaiement, Statut statut) {
+        this.date = date;
+        this.montant = montant;
+        this.methodeDepaiement = methodeDepaiement;
+        this.statut = statut;
+    }
 }
