@@ -15,4 +15,11 @@ public class InstallationKey implements Serializable {
 
     @Column(name = "Residence_id")
     private  long ResidenceId;
+
+    public InstallationKey(long idResidence, long idEquipement) {
+    }
+
+    public InstallationKey() {
+
+    }
 }

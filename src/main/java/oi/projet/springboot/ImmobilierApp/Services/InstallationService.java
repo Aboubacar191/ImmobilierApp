@@ -33,4 +33,7 @@ public class InstallationService {
             throw new RuntimeException("Installation introuvable avec l'ID : " + id);
         }
     }
+
+    public void deleteInstallationByCompositeKey(String residenceName, Long equipementId) {
+    }
 }

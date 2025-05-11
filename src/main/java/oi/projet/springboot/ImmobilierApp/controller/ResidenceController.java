@@ -1,14 +1,16 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
+import oi.projet.springboot.ImmobilierApp.DTO.ResidenceDTO;
+import oi.projet.springboot.ImmobilierApp.Mapper.ResidenceMapper;
 import oi.projet.springboot.ImmobilierApp.Services.ResidenceService;
 import oi.projet.springboot.ImmobilierApp.models.Residence;
-import oi.projet.springboot.ImmobilierApp.Services.ResidenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/residences")
@@ -18,26 +20,39 @@ public class ResidenceController {
     @Autowired
     private ResidenceService residenceService;
 
+    @Autowired
+    private ResidenceMapper residenceMapper;
+
     @GetMapping
-    public ResponseEntity<List<Residence>> getAllResidences() {
-        return ResponseEntity.ok(residenceService.getAllResidences());
+    public ResponseEntity<List<ResidenceDTO>> getAllResidences() {
+        List<ResidenceDTO> dtos = residenceService.getAllResidences()
+                .stream()
+                .map(residenceMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Residence> getResidenceById(@PathVariable Long id) {
-        Optional<Residence> residence = residenceService.getResidenceById(id);
-        return residence.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ResidenceDTO> getResidenceById(@PathVariable Long id) {
+        Optional<Residence> residenceOpt = residenceService.getResidenceById(id);
+        return residenceOpt
+                .map(residence -> ResponseEntity.ok(residenceMapper.toDTO(residence)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Residence> createResidence(@RequestBody Residence residence) {
-        return ResponseEntity.ok(residenceService.saveResidence(residence));
+    public ResponseEntity<ResidenceDTO> createResidence(@RequestBody ResidenceDTO dto) {
+        Residence residence = residenceMapper.toEntity(dto); //
+        Residence saved = residenceService.saveResidence(residence);
+        return ResponseEntity.ok(residenceMapper.toDTO(saved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Residence> updateResidence(@PathVariable Long id, @RequestBody Residence residence) {
-        residence.setIdResidence(id);
-        return ResponseEntity.ok(residenceService.saveResidence(residence));
+    public ResponseEntity<ResidenceDTO> updateResidence(@PathVariable Long id, @RequestBody ResidenceDTO dto) {
+        dto.setIdResidence(id); // ✅ On garde l'ID correct
+        Residence residence = residenceMapper.toEntity(dto); // ✅ Mapping DTO → Entity
+        Residence saved = residenceService.saveResidence(residence);
+        return ResponseEntity.ok(residenceMapper.toDTO(saved));
     }
 
     @DeleteMapping("/{id}")

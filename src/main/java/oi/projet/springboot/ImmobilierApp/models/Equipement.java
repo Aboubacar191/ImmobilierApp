@@ -39,4 +39,7 @@ public class Equipement implements Serializable {
         this.nomEquipement = nomEquipement;
         this.description = description;
     }
+
+
+
 }

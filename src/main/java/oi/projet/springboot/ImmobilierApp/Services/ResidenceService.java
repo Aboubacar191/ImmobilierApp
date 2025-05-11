@@ -33,4 +33,9 @@ public class ResidenceService {
             throw new RuntimeException("Résidence introuvable avec l'ID : " + id);
         }
     }
+
+    public Optional<Residence> findByNomResidence(String nomResidence) {
+        return residenceRepository.findByNomResidence(nomResidence);
+    }
+
 }

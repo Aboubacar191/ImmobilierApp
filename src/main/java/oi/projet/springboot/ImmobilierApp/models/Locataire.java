@@ -3,7 +3,6 @@ package oi.projet.springboot.ImmobilierApp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
 

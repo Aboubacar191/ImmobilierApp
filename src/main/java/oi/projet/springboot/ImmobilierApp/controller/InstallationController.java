@@ -1,14 +1,20 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
-import oi.projet.springboot.ImmobilierApp.models.Installation;
+import oi.projet.springboot.ImmobilierApp.DTO.InstallationDTO;
+import oi.projet.springboot.ImmobilierApp.Mapper.InstallationMapper;
+import oi.projet.springboot.ImmobilierApp.Services.EquipementService;
 import oi.projet.springboot.ImmobilierApp.Services.InstallationService;
-import oi.projet.springboot.ImmobilierApp.models.InstallationKey;
+import oi.projet.springboot.ImmobilierApp.Services.ResidenceService;
+import oi.projet.springboot.ImmobilierApp.models.Installation;
+import oi.projet.springboot.ImmobilierApp.models.Residence;
+import oi.projet.springboot.ImmobilierApp.models.Equipement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/installations")
@@ -18,32 +24,42 @@ public class InstallationController {
     @Autowired
     private InstallationService installationService;
 
-    @GetMapping
-    public ResponseEntity<List<Installation>> getAllInstallations() {
-        return ResponseEntity.ok(installationService.getAllInstallations());
-    }
+    @Autowired
+    private ResidenceService residenceService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Installation> getInstallationById(@PathVariable Long id) {
-        return installationService.getInstallationById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @Autowired
+    private EquipementService equipementService;
+
+    @Autowired
+    private InstallationMapper installationMapper;
+
+    @GetMapping
+    public ResponseEntity<List<InstallationDTO>> getAllInstallations() {
+        List<InstallationDTO> dtos = installationService.getAllInstallations()
+                .stream()
+                .map(installationMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping
-    public ResponseEntity<Installation> createInstallation(@RequestBody Installation installation) {
-        return ResponseEntity.ok(installationService.saveInstallation(installation));
+    public ResponseEntity<InstallationDTO> createInstallation(@RequestBody InstallationDTO dto) {
+        Optional<Residence> residence = residenceService.findByNomResidence(dto.getNomResidence());
+        Optional<Equipement> equipement = equipementService.getEquipementById(dto.getEquipementId());
+
+        if (residence.isEmpty() || equipement.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Installation saved = installationService.saveInstallation(
+                installationMapper.toEntity(dto, residence.get(), equipement.get())
+        );
+        return ResponseEntity.ok(installationMapper.toDTO(saved));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Installation> updateInstallation(@PathVariable InstallationKey id, @RequestBody Installation installation) {
-        installation.setInstallationKey(id);
-        return ResponseEntity.ok(installationService.saveInstallation(installation));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteInstallation(@PathVariable Long id) {
-        installationService.deleteInstallation(id);
+    @DeleteMapping("/{residenceName}/{equipementId}")
+    public ResponseEntity<Void> deleteInstallation(@PathVariable String residenceName, @PathVariable Long equipementId) {
+        installationService.deleteInstallationByCompositeKey(residenceName, equipementId);
         return ResponseEntity.noContent().build();
     }
 }

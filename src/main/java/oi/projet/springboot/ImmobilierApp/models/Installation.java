@@ -21,7 +21,6 @@ public class Installation implements Serializable {
     @ManyToOne()
     @JoinColumn(name = "residence_id")
     @MapsId("ResidenceId")
-    @JsonBackReference
     private Residence residence;
 
     @ManyToOne()
