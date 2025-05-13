@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface LocataireRepository extends UserRepository<Locataire> {
     Locataire findByUsername(String username);
-
     Optional<Locataire> findByNomAndPrenom(String nomLocataire, String prenomLocataire);
 }
 

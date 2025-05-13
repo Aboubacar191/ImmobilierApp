@@ -66,7 +66,6 @@ public class Residence implements Serializable {
 
 
     @OneToMany(mappedBy = "residence",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonManagedReference
     private List<Installation> installations;
 
     @ManyToMany
