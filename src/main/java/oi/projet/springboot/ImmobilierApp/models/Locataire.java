@@ -37,4 +37,6 @@ public class Locataire extends User implements Serializable {
         this.numeroDuLit = numeroDuLit;
         this.contrat = contrat;
     }
+
+
 }

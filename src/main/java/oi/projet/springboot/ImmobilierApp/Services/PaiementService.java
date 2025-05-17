@@ -1,5 +1,7 @@
 package oi.projet.springboot.ImmobilierApp.Services;
 
+import oi.projet.springboot.ImmobilierApp.DTO.PaiementDetailsDTO;
+import oi.projet.springboot.ImmobilierApp.models.Locataire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -21,6 +23,38 @@ public class PaiementService {
     public Optional<Paiement> getPaiementById(Long id) {
         return paiementRepository.findById(id);
     }
+    public Optional<PaiementDetailsDTO> getPaiementDetailsById(Long id) {
+        Optional<Paiement> optionalPaiement = paiementRepository.findById(id);
+
+        if (optionalPaiement.isPresent()) {
+            Paiement paiement = optionalPaiement.get();
+
+            // Supposons que Paiement a un champ Locataire locataire
+            Locataire locataire = paiement.getLocataire();
+
+
+            PaiementDetailsDTO dto = new PaiementDetailsDTO(
+                    paiement.getIdPaiement(),
+                    paiement.getDate(),
+                    paiement.getMontant(),
+                    paiement.getMethodeDepaiement().name(),
+                    paiement.getStatut().name(),
+                    locataire.getNom(),
+                    locataire.getPrenom(),
+                    locataire.getAdresse(),
+                    locataire.getTelephone1(),
+                    locataire.getEmail(),
+                    locataire.getResidence().getNomResidence(),
+                    locataire.getNumeroDuLit(),
+                    locataire.getResidence().getTypeLogement().name()
+            );
+
+            return Optional.of(dto);
+        } else {
+            return Optional.empty();
+        }
+    }
+
 
     public Paiement savePaiement(Paiement paiement) {
         return paiementRepository.save(paiement);

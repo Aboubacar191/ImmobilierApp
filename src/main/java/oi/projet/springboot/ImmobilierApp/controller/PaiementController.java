@@ -1,9 +1,9 @@
 package oi.projet.springboot.ImmobilierApp.controller;
 
+import oi.projet.springboot.ImmobilierApp.DTO.PaiementDetailsDTO;
 import oi.projet.springboot.ImmobilierApp.Mapper.PaiementMapper;
 import oi.projet.springboot.ImmobilierApp.Services.PaiementService;
 import oi.projet.springboot.ImmobilierApp.DTO.PaiementDTO;
-import oi.projet.springboot.ImmobilierApp.Mapper.PaiementMapper;
 import oi.projet.springboot.ImmobilierApp.models.Locataire;
 import oi.projet.springboot.ImmobilierApp.models.Paiement;
 import oi.projet.springboot.ImmobilierApp.repository.LocataireRepository;
@@ -45,6 +45,17 @@ public class PaiementController {
         return paiement.map(p -> ResponseEntity.ok(paiementMapper.toDTO(p)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping("/details/{id}")
+    public ResponseEntity<PaiementDetailsDTO> getPaiementDetailsById(@PathVariable Long id) {
+        Optional<PaiementDetailsDTO> paiementDetails = paiementService.getPaiementDetailsById(id);
+
+        if (paiementDetails.isPresent()) {
+            return ResponseEntity.ok(paiementDetails.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @PostMapping
     public ResponseEntity<?> createPaiement(@RequestBody PaiementDTO paiementDTO) {
